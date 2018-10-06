@@ -3,7 +3,7 @@
 淮阴工学院大学物理实验课选课提醒程序
 
 
-## Systemd配置
+* Systemd配置QQBot:
 ```
 [Unit]
 Description=QQBot Service
