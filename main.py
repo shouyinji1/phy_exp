@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 
 import sendEmail
 import sendqq
+import sendSMS
 
 class Sjjx_Form_Data:
     login_url='http://sjjx.hyit.edu.cn/syjx'
@@ -277,22 +278,48 @@ def check_class(UserName,PassWord,campus):
         return False
 
 
-if __name__ == '__main__':
+def door(user):
     try:
-        information=check_class(帐号,密码,8)
+        information=check_class(user['UserName'],user['PassWord'],user['campus'])
         if information:
-            sendEmail.sendEmail(information,'收件箱')
-            sendqq.sendqq(information,'哈哈','group')
-
-        information=check_class(帐号,密码,8)
-        if information:
-            sendEmail.sendEmail(information,'收件箱')
-            sendqq.sendqq(information,'张三','buddy')
-
+            if user['email']:
+                sendEmail.sendEmail(information,user['email'])
+            if user['qq']:
+                sendqq.sendqq(information,user['qq'],user['qq_type'])
+            if user['to_phone']:
+                sendSMS.sendSMS(user['to_phone'])
     except Exception as ex:
         f=open('./phy_exp.log','a+')
         f.write('发生异常\n')
-        f.write(str(ex))
+        f.write(str(ex)+'\n')
+        f.write(str(user['UserName'])+'\n')
         f.write('\n程序检测时间：'+time.strftime("%Y-%m-%d %H:%M:%S"+'\n', time.localtime()))
+        f.write('----------\n')
         f.close()
         sendEmail.sendEmail('./phy_exp.log')
+
+
+if __name__ == '__main__':
+    users=[
+        {
+            'UserName':'帐号',
+            'PassWord':'密码',
+            'campus':'8',   # 校区
+            'email':'接收邮箱',
+            'qq':'QQ昵称',
+            'qq_type':'QQ类型',
+            'to_phone':'+86接收手机号'
+        },        
+        {
+            'UserName':'帐号',
+            'PassWord':'密码',
+            'campus':'8',   #校区
+            'email':'接收邮箱',
+            'qq':'QQ昵称',
+            'qq_type':'QQ类型',
+            'to_phone':None
+        },        
+    ]
+
+    for user in users:
+        door(user)
