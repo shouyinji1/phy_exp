@@ -1,9 +1,10 @@
 # phy_exp
 
-## Systemd
+淮阴工学院大学物理实验课选课提醒程序
 
+
+## Systemd配置
 ```
-
 [Unit]
 Description=QQBot Service
 After=network.target
@@ -17,5 +18,4 @@ User=root
 
 [Install]
 WantedBy=multi-user.target
-
 ```
