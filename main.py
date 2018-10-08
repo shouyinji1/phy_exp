@@ -3,6 +3,7 @@
 
 import check
 from hyit_login import hyit_login 
+from sendEmail import sendEmail 
 
 
 if __name__ == '__main__':
@@ -44,5 +45,6 @@ if __name__ == '__main__':
             f.write('\n程序检测时间：'+time.strftime("%Y-%m-%d %H:%M:%S"+'\n', time.localtime()))
             f.write('----------\n')
             f.close()
-    sendEmail.sendEmail('./phy_exp.log','邮箱帐号')
+    if myBug:
+        sendEmail('./phy_exp.log','异常消息接收邮箱帐号')
 

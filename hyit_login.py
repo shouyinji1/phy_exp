@@ -7,7 +7,7 @@ from urllib import request, parse
 #rememberPwd=input("Whether Remember login status? (1=true,0=false): ")
 
 
-def hyit_login(userName,pwd,rememberPwd=1)
+def hyit_login(userName,pwd,rememberPwd=1):
     #print("登陆淮阴工学院上网认证系统")
     post_url='http://172.16.5.73/portal/login.php'
     post_data={
