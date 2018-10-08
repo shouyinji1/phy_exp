@@ -7,7 +7,7 @@ import os
 from bs4 import BeautifulSoup
 
 import sendEmail
-import sendqq
+import sendQQ
 import sendSMS
 
 class Sjjx_Form_Data:
@@ -111,11 +111,15 @@ class Sjjx_login(Sjjx_Form_Data):
     def get_tables(self):
         tables=[]
         soup=BeautifulSoup(self.get_index().text, 'html.parser')
-        tables.append(str(soup.find(class_='gridview_m')))
+        option=soup.find(id='ddlCurrentPage')
+        if option:
+            table_option=option.find_all('option')
+        else:
+            return None
 
+        tables.append(str(soup.find(class_='gridview_m')))
         self.table_form_data['__VIEWSTATE']=soup.find(id='__VIEWSTATE').get('value')
         self.table_form_data.update(self.query_data)
-        table_option=soup.find(id='ddlCurrentPage').find_all('option')
         for i in range(1,len(table_option)):
             self.table_form_data['ddlCurrentPage']=table_option[i]['value']
             table_temp=str(self.session.post(self.index_url,data=self.table_form_data,headers=self.table_request_headers).text)
@@ -132,7 +136,7 @@ class Html_Table:
     def __init__(self,table):
         self.soup=BeautifulSoup(table, 'html.parser')
         self.line_count=len(self.table())
-        self.column_count=len(self.line(1))
+        self.column_count=len(self.title())
 
     def table(self):
         return self.soup.find_all('tr')
@@ -230,10 +234,14 @@ class Course:
     def get_tables(self):
         tables=[]
         soup=BeautifulSoup(self.target_content,'html.parser')
-        tables.append(str(soup.find(class_='gridview_m')))
+        option=soup.find(id='ddlCurrentPage')
+        if option:
+            table_option=option.find_all('option')
+        else:
+            return None
 
+        tables.append(str(soup.find(class_='gridview_m')))
         self.table_form_data['__VIEWSTATE']=soup.find(id='__VIEWSTATE').get('value')
-        table_option=soup.find(id='ddlCurrentPage').find_all('option')
         for i in range(1,len(table_option)):
             self.table_form_data['ddlCurrentPage']=table_option[i]['value']
             table_temp=str(self.session.post(self.course_url,data=self.table_form_data,headers=self.request_headers).text)
@@ -249,30 +257,26 @@ def check_class(UserName,PassWord,campus):
     f=open(phy_exp,'w+')
     s=Sjjx_login(UserName,PassWord)
     tables=s.get_tables()
-    for k in tables:
-        try:
+    if tables:
+        for k in tables:
             table=Html_Table(str(k))
-        except:
-            continue
-        for i in range(1,table.line_count):
-            course_URL = table.get_element_URL(i,4)
-            if course_URL:
-                course=Course(s.session,getCampus(s.session,course_URL).text,campus,course_URL)
-                class_tables=course.get_tables()
-                for j in class_tables:
-                    #print(j)
-                    try:
-                        class_table=Html_Table(str(j))
-                    except:
-                        continue
-                    for n in range(1,class_table.line_count):
-                        result=class_table.element(n,6).input['value']
-                        if result != '人数已满':
-                            count=count+1
-                            for m in range(0,class_table.column_count-1):
-                                f.write(str(class_table.title_text(m)).strip()+'：'+str(class_table.element_text(n,m)).strip()+'\n')
-                            f.write('程序查询时间：'+time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())+'\n')
-                            f.write('----------\n')
+            for i in range(1,table.line_count):
+                course_URL = table.get_element_URL(i,4)
+                if course_URL:
+                    course=Course(s.session,getCampus(s.session,course_URL).text,campus,course_URL)
+                    class_tables=course.get_tables()
+                    if class_tables:
+                        for j in class_tables:
+                            #print(j)
+                            class_table=Html_Table(str(j))
+                            for n in range(1,class_table.line_count):
+                                result=class_table.element(n,6).input['value']
+                                if result != '人数已满':
+                                    count=count+1
+                                    for m in range(0,class_table.column_count-1):
+                                        f.write(str(class_table.title_text(m)).strip()+'：'+str(class_table.element_text(n,m)).strip()+'\n')
+                                    f.write('程序查询时间：'+time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())+'\n')
+                                    f.write('----------\n')
     f.write('\n==========\n')
     f.write('可选课程数量：'+str(count)+'\n')
     f.write('程序检测时间：'+time.strftime("%Y-%m-%d %H:%M:%S"+'\n', time.localtime()))
@@ -285,22 +289,11 @@ def check_class(UserName,PassWord,campus):
 
 
 def door(user):
-    try:
-        information=check_class(user['UserName'],user['PassWord'],user['campus'])
-        if information:
-            if user['email']:
-                sendEmail.sendEmail(information,user['email'])
-            if user['qq']:
-                sendqq.sendqq(information,user['qq'],user['qq_type'])
-            if user['to_phone']:
-                sendSMS.sendSMS(user['to_phone'])
-    except Exception as ex:
-        f=open('./phy_exp.log','a+')
-        f.write('发生异常\n')
-        f.write(str(ex)+'\n')
-        f.write(str(user['UserName'])+'\n')
-        f.write('\n程序检测时间：'+time.strftime("%Y-%m-%d %H:%M:%S"+'\n', time.localtime()))
-        f.write('----------\n')
-        f.close()
-        sendEmail.sendEmail('./phy_exp.log')
-
+    information=check_class(user['UserName'],user['PassWord'],user['campus'])
+    if information:
+        if user['email']:
+            sendEmail.sendEmail(information,user['email'])
+        if user['qq']:
+            sendQQ.sendqq(information,user['qq'],user['qq_type'])
+        if user['to_phone']:
+            sendSMS.sendSMS(user['to_phone'])

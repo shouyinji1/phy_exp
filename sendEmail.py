@@ -12,7 +12,7 @@ def format_addr(s):
     name, addr = parseaddr(s)
     return formataddr((Header(name, "utf-8").encode(), addr))
 
-def sendEmail(phy_exp,to_email='邮箱帐号'):
+def sendEmail(phy_exp,to_email):
     from_email = "邮箱帐号"
     from_email_pwd = "邮箱密码"
     smtp_server = "smtp.126.com"
