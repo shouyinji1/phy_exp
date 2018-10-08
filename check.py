@@ -250,7 +250,10 @@ def check_class(UserName,PassWord,campus):
     s=Sjjx_login(UserName,PassWord)
     tables=s.get_tables()
     for k in tables:
-        table=Html_Table(str(k))
+        try:
+            table=Html_Table(str(k))
+        except:
+            continue
         for i in range(1,table.line_count):
             course_URL = table.get_element_URL(i,4)
             if course_URL:
@@ -258,7 +261,10 @@ def check_class(UserName,PassWord,campus):
                 class_tables=course.get_tables()
                 for j in class_tables:
                     #print(j)
-                    class_table=Html_Table(str(j))
+                    try:
+                        class_table=Html_Table(str(j))
+                    except:
+                        continue
                     for n in range(1,class_table.line_count):
                         result=class_table.element(n,6).input['value']
                         if result != '人数已满':
