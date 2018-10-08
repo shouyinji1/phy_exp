@@ -275,7 +275,7 @@ def check_class(UserName,PassWord,campus):
                                     count=count+1
                                     for m in range(0,class_table.column_count-1):
                                         f.write(str(class_table.title_text(m)).strip()+'：'+str(class_table.element_text(n,m)).strip()+'\n')
-                                    f.write('程序查询时间：'+time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())+'\n')
+                                    #f.write('程序查询时间：'+time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())+'\n')
                                     f.write('----------\n')
     f.write('\n==========\n')
     f.write('可选课程数量：'+str(count)+'\n')
@@ -291,9 +291,9 @@ def check_class(UserName,PassWord,campus):
 def door(user):
     information=check_class(user['UserName'],user['PassWord'],user['campus'])
     if information:
-        if user['email']:
-            sendEmail.sendEmail(information,user['email'])
         if user['qq']:
             sendQQ.sendqq(information,user['qq'],user['qq_type'])
+        if user['email']:
+            sendEmail.sendEmail(information,user['email'])
         if user['to_phone']:
             sendSMS.sendSMS(user['to_phone'])
