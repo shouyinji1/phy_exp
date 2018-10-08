@@ -7,7 +7,7 @@ from hyit_login import hyit_login
 
 if __name__ == '__main__':
     # 淮阴工学院上网认证系统账号密码
-    hyit_login('账号',‘密码’)
+    hyit_login('账号','密码')
 
     # 检测账号信息
     users=[
