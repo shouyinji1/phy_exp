@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import check
+import time
 from hyit_login import hyit_login 
 from sendEmail import sendEmail 
 
