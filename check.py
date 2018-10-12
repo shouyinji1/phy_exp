@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 import sendEmail
 import sendQQ
 import sendSMS
+import storageSQL
 
 class Sjjx_Form_Data:
     login_url='http://sjjx.hyit.edu.cn/syjx'
@@ -252,9 +253,8 @@ class Course:
 
 
 def check_class(UserName,PassWord,campus):
-    count=0
+    sql=storageSQL.CourseSQL('course.db')
     phy_exp='./phy_exp_'+str(UserName)+'.txt'
-    f=open(phy_exp,'w+')
     s=Sjjx_login(UserName,PassWord)
     tables=s.get_tables()
     if tables:
@@ -272,11 +272,12 @@ def check_class(UserName,PassWord,campus):
                             for n in range(1,class_table.line_count):
                                 result=class_table.element(n,6).input['value']
                                 if result != '人数已满':
-                                    count=count+1
-                                    for m in range(0,class_table.column_count-1):
-                                        f.write(str(class_table.title_text(m)).strip()+'：'+str(class_table.element_text(n,m)).strip()+'\n')
-                                    #f.write('程序查询时间：'+time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())+'\n')
-                                    f.write('----------\n')
+                                    sql.insert(class_table.element_text(n,1).strip(),class_table.element_text(n,2).strip(),class_table.element_text(n,3).strip(),class_table.element_text(n,4).strip(),class_table.element_text(n,5).strip(),UserName,'1')
+    sql.update()
+    count=sql.output(phy_exp,UserName)
+    sql.close()
+
+    f=open(phy_exp,'w+')
     f.write('\n==========\n')
     f.write('可选课程数量：'+str(count)+'\n')
     f.write('程序检测时间：'+time.strftime("%Y-%m-%d %H:%M:%S"+'\n', time.localtime()))
