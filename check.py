@@ -253,6 +253,7 @@ class Course:
 
 
 def check_class(UserName,PassWord,campus):
+    sum=0
     sql=storageSQL.CourseSQL('course.db')
     phy_exp='./phy_exp_'+str(UserName)+'.txt'
     s=Sjjx_login(UserName,PassWord)
@@ -272,6 +273,7 @@ def check_class(UserName,PassWord,campus):
                             for n in range(1,class_table.line_count):
                                 result=class_table.element(n,6).input['value']
                                 if result != '人数已满':
+                                    sum=sum+1
                                     sql.insert(class_table.element_text(n,1).strip(),class_table.element_text(n,2).strip(),class_table.element_text(n,3).strip(),class_table.element_text(n,4).strip(),class_table.element_text(n,5).strip(),UserName,'1')
     sql.update()
     count=sql.output(phy_exp,UserName)
@@ -279,7 +281,7 @@ def check_class(UserName,PassWord,campus):
 
     f=open(phy_exp,'w+')
     f.write('\n==========\n')
-    f.write('可选课程数量：'+str(count)+'\n')
+    f.write('可选课程数量：'+str(sum)+'\n')
     f.write('程序检测时间：'+time.strftime("%Y-%m-%d %H:%M:%S"+'\n', time.localtime()))
     f.write('=========='+'\n')
     f.close()
