@@ -3,9 +3,28 @@
 
 import check
 import time
+import random
 import storageSQL
+from sendQQ import sendqq
 from hyit_login import hyit_login 
 from sendEmail import sendEmail 
+from advertisment import advertisment 
+
+
+def operateSQL():
+    sql=storageSQL.CourseSQL('course.db')
+    file='./phy_exp.txt'
+    count=sql.save_all('./phy_exp.txt')
+    check.check_time(file,sql.count_all())
+    advertisment(file)
+    if count:
+        if int(random.random()*2)==0:
+            sendqq(file,'群1','group')
+        if int(random.random()*10)==0:
+            sendqq(file,'群2','group')
+            sendqq(file,'群3','group')
+    sql.move()
+    sql.close()
 
 
 if __name__ == '__main__':
@@ -48,9 +67,8 @@ if __name__ == '__main__':
             f.write('----------\n')
             f.close()
 
-    sql=storageSQL.CourseSQL('course.db')
-    sql.move()
-    sql.close()
+
+    operateSQL()
 
     if myBug:
         sendEmail('./phy_exp.log','异常消息接收邮箱帐号')

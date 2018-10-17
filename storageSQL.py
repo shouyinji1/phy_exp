@@ -50,7 +50,7 @@ class CourseSQL:
         # 比较两个数据表，将重复的内容添加标记
         try:
             if self.__history_exists():
-                self.cursor.execute('''update course set marker=0 where (SELECT 实验时间,指导老师,实验时间,实验地点,预约进度,UserName FROM course)=(SELECT 实验时间,指导老师,实验时间,实验地点,预约进度,UserName FROM course_history)''')
+                self.cursor.execute('''update course set marker=0 where (SELECT 实验项目,指导老师,实验时间,实验地点,UserName FROM course)=(SELECT 实验项目,指导老师,实验时间,实验地点,UserName FROM course_history)''')
                 self.conn.commit()
         except:
             return False 
@@ -67,12 +67,24 @@ class CourseSQL:
         return True
 
     def output(self,file_path,UserName):
-        count=0
         self.cursor.execute('SELECT * FROM course WHERE UserName=\''+UserName+'\' AND marker=1')
         content=self.cursor.fetchall()
+        count=self.__save_text(file_path,content)
+        return count
+
+    def save_all(self,file_path):
+        content=self.cursor.execute('SELECT DISTINCT 实验项目,指导老师,实验时间,实验地点,预约进度 FROM course WHERE marker=1')
+        count=self.__save_text(file_path,content)
+        return count
+
+    def count_all(self):
+        content=self.cursor.execute('SELECT DISTINCT 实验项目,指导老师,实验时间,实验地点 FROM course')
+        return len(list(content))
+
+    def __save_text(self,file_path,content):
+        count=0
         f=open(file_path,'w+',encoding='utf-8')
         for i in content:
-            #if ((i[5]==UserName) and i[6]==1):
             count=count+1
             f.write('[课程]实验项目：'+i[0]+'\n')
             f.write('指导老师：'+i[1]+'\n')
@@ -82,6 +94,7 @@ class CourseSQL:
             f.write('----------\n')
         f.close()
         return count
+
 
     def close(self):
         self.conn.close()

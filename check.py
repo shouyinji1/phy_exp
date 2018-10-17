@@ -10,6 +10,7 @@ import sendEmail
 import sendQQ
 import sendSMS
 import storageSQL
+from advertisment import advertisment
 
 class Sjjx_Form_Data:
     login_url='http://sjjx.hyit.edu.cn/syjx'
@@ -279,16 +280,20 @@ def check_class(UserName,PassWord,campus):
     count=sql.output(phy_exp,UserName)
     sql.close()
 
-    f=open(phy_exp,'w+')
-    f.write('\n==========\n')
-    f.write('可选课程数量：'+str(sum)+'\n')
-    f.write('程序检测时间：'+time.strftime("%Y-%m-%d %H:%M:%S"+'\n', time.localtime()))
-    f.write('=========='+'\n')
-    f.close()
+    check_time(phy_exp,sum)
+    advertisment(phy_exp)
     if count>0 :
         return phy_exp
     else:
         return False
+
+def check_time(file_name,count):
+    f=open(file_name,'a+')
+    f.write('\n==========\n')
+    f.write('可选课程数量：'+str(count)+'\n')
+    f.write('程序检测时间：'+time.strftime("%Y-%m-%d %H:%M:%S"+'\n', time.localtime()))
+    f.write('=========='+'\n')
+    f.close()
 
 
 def door(user):

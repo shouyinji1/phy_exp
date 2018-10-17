@@ -12,7 +12,7 @@ def format_addr(s):
     name, addr = parseaddr(s)
     return formataddr((Header(name, "utf-8").encode(), addr))
 
-def sendEmail(phy_exp,to_email):
+def sendEmail(phy_exp,to_email,subject='物理实验选课提醒'):
     from_email = "邮箱帐号"
     from_email_pwd = "邮箱密码"
     smtp_server = "smtp.126.com"
@@ -28,7 +28,7 @@ def sendEmail(phy_exp,to_email):
     msg = MIMEText(text, "plain", "utf-8")
     msg["From"] = format_addr("%s" %(from_email))
     msg["To"] = format_addr("%s" %(to_email))
-    msg["Subject"] = Header("物理实验选课提醒", "utf-8").encode()
+    msg["Subject"] = Header(subject, "utf-8").encode()
 
     server = smtplib.SMTP(smtp_server, 25)
     server.set_debuglevel(1)
