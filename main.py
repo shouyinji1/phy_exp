@@ -71,5 +71,5 @@ if __name__ == '__main__':
     operateSQL()
 
     if myBug:
-        sendEmail('./phy_exp.log','异常消息接收邮箱帐号')
+        sendEmail('./phy_exp.log','异常消息接收邮箱帐号','选课提醒程序异常')
 
